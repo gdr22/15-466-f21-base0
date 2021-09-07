@@ -48,7 +48,7 @@ struct MyMode : Mode {
 	float ball_radius = 0.2f;
 
 	glm::vec2 ball = glm::vec2(0.0f, 1.5f);
-	glm::vec2 ball_velocity = glm::vec2(2.0f, 0.0f);
+	glm::vec2 ball_velocity = glm::vec2(0.5f, -1.5f);
 
 	//----- opengl assets / helpers ------
 
