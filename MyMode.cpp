@@ -17,11 +17,7 @@
 
 MyMode::MyMode() {
 
-	//set up trail as if ball has been here for 'forever':
-	ball_trail.clear();
-	ball_trail.emplace_back(ball, trail_length);
-	ball_trail.emplace_back(ball, 0.0f);
-
+	// Ensure all the bricks are present
 	for (int ring = 0; ring < RINGS; ring++) {
 		for (int brick = 0; brick < BRICKS_PER_ROW; brick++) {
 			//bricks[ring][brick] = (brick) % (ring + 2)!= 0;
@@ -130,6 +126,8 @@ MyMode::~MyMode() {
 	white_tex = 0;
 }
 
+// Computes the intersection of a ray {origin, dir} with a circle centered about
+// the scene origin with a given radius
 float intersect_ring(glm::vec2 origin, glm::vec2 dir, float radius) {
 	float a = (   dir.x *    dir.x) + (   dir.y *    dir.y);
 	float b = (   dir.x * origin.x) + (   dir.y * origin.y);
@@ -148,11 +146,15 @@ float intersect_ring(glm::vec2 origin, glm::vec2 dir, float radius) {
 	return (t0 < t1) ? t0 : t1;
 }
 
+// Computes the cross product between a and b
 float cross(glm::vec2 a, glm::vec2 b) {
 	return (a.x * b.y) - (a.y * b.x);
 }
 
+// Computes the intersection of a ray {origin, dir} with a line segment direction
+// r from the center between radii inner_rad and outer_rad
 float intersect_line_segment(glm::vec2 r, float inner_rad, float outer_rad, glm::vec2 origin, glm::vec2 dir) {
+	// (I'm sure this formula exists elsewhere, but I worked this one out by hand)
 	float t = -cross(origin, r) / cross(dir, r);
 
 	// Check that we intersect within the next frame
@@ -171,6 +173,7 @@ float intersect_line_segment(glm::vec2 r, float inner_rad, float outer_rad, glm:
 	return t;
 }
 
+// Reflects dir vector about the normal vector
 glm::vec2 reflect(glm::vec2 dir, glm::vec2 normal) {
 	return dir - (normal * 2.0f * (dir.x * normal.x + dir.y * normal.y));
 }
@@ -357,7 +360,6 @@ void MyMode::draw(glm::uvec2 const &drawable_size) {
 
 	//other useful drawing constants:
 	const float wall_radius = 0.05f;
-	const float shadow_offset = 0.07f;
 	const float padding = 0.14f; //padding between outside of walls and edge of window
 
 	//---- compute vertices to draw ----
@@ -378,7 +380,7 @@ void MyMode::draw(glm::uvec2 const &drawable_size) {
 	};
 
 	auto draw_sector = [&vertices](glm::vec2 center, glm::vec2 radius, glm::vec2 angles, glm::u8vec4 const& color) {
-		//draw rectangle as two CCW-oriented triangles:
+		// Draw a sector as a series of 1-degree trapezoids
 		
 		float step = 1;
 
@@ -401,7 +403,7 @@ void MyMode::draw(glm::uvec2 const &drawable_size) {
 	};
 
 	auto draw_circle = [&vertices](glm::vec2 center, float radius, glm::u8vec4 const& color) {
-		//draw rectangle as two CCW-oriented triangles:
+		//draw a circle as a series of triangles
 
 		float step = 5;
 
@@ -437,6 +439,8 @@ void MyMode::draw(glm::uvec2 const &drawable_size) {
 														 + ring_angle;
 			glm::vec2 sec_radius = glm::vec2(radius, radius + RING_WIDTH);
 
+			// If the brick is destroyed but still being animated, adjust the drawing
+			// parameters
 			if (!bricks[ring][brick]) {
 				float lerp = 1 - (hit_lerp[ring][brick] / LERP_TIME);
 
