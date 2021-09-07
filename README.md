@@ -13,6 +13,9 @@ How To Play:
 Rotate the rings by moving the mouse cursor around the center circle. Watch out,
 the outer rings move a lot slower than the inner rings!
 
+Every time the ball leaves the screen you lose one of three lives. If you break
+all the bricks before losing all three lives, you win!
+
 Sources: Circle-circle intersection code largely inspired by the ray-sphere
 intersection code found in Scotty3D.
 
